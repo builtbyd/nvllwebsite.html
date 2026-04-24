@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NVLL — Create From Nothing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --off-white: #f0ede8;
+    --pink: #c0546a;
+    --pink-light: #e8788a;
+    --gray: #1e1e1e;
+    --gray-mid: #3a3a3a;
+    --cream: #d8d3cb;
+    --text-muted: #888;
+    --accent: #c0546a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--off-white);
+    font-family: 'Space Mono', monospace;
+    cursor: crosshair;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 3rem;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .nav-logo {
+    font-family: 'Black Ops One', cursive;
+    font-size: 1.8rem;
+    letter-spacing: 0.15em;
+    color: var(--off-white);
+    text-decoration: none;
+    text-shadow: 0 0 30px rgba(192,84,106,0.4);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--cream);
+    text-decoration: none;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--pink-light); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    padding: 8rem 2rem 4rem;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 60% 50% at 50% 60%, rgba(192,84,106,0.15) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 20% 20%, rgba(192,84,106,0.08) 0%, transparent 60%),
+      var(--black);
+  }
+
+  .hero-eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+    position: relative;
+  }
+
+  .hero-title {
+    font-family: 'Black Ops One', cursive;
+    font-size: clamp(6rem, 18vw, 18rem);
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+    position: relative;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+    text-shadow: 0 0 80px rgba(192,84,106,0.3), 0 2px 0 rgba(255,255,255,0.05);
+  }
+
+  .hero-title span {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(240,237,232,0.3);
+  }
+
+  .hero-slogan {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.2rem, 3vw, 2.2rem);
+    letter-spacing: 0.5em;
+    color: var(--cream);
+    margin-top: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+    position: relative;
+  }
+
+  .hero-cta-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+    position: relative;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-primary {
+    background: var(--pink);
+    color: var(--off-white);
+    border: none;
+    padding: 1rem 2.5rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.1s;
+    display: inline-block;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+
+  .btn-primary:hover { background: var(--pink-light); transform: translateY(-2px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--off-white);
+    border: 1px solid rgba(240,237,232,0.3);
+    padding: 1rem 2.5rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+    display: inline-block;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+
+  .btn-outline:hover { border-color: var(--pink); color: var(--pink-light); }
+
+  /* DROP BANNER */
+  .drop-banner {
+    background: var(--pink);
+    padding: 0.8rem;
+    text-align: center;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    overflow: hidden;
+  }
+
+  .marquee-text {
+    display: inline-block;
+    animation: marquee 20s linear infinite;
+    white-space: nowrap;
+  }
+
+  /* SECTION BASE */
+  section { padding: 6rem 3rem; position: relative; }
+
+  .section-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    letter-spacing: 0.05em;
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  /* PRE-ORDER */
+  #preorder {
+    background: var(--gray);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .preorder-inner { max-width: 1100px; margin: 0 auto; }
+
+  .preorder-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+    margin-bottom: 4rem;
+  }
+
+  .preorder-desc {
+    color: var(--cream);
+    font-size: 0.8rem;
+    line-height: 1.8;
+    margin-top: 1rem;
+  }
+
+  .drop-countdown {
+    background: var(--black);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 2rem;
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+  }
+
+  .countdown-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .countdown-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .countdown-unit { display: flex; flex-direction: column; gap: 0.3rem; }
+
+  .countdown-num {
+    font-family: 'Black Ops One', cursive;
+    font-size: 2.5rem;
+    color: var(--pink);
+    line-height: 1;
+  }
+
+  .countdown-unit-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  /* SINGLE PRODUCT */
+  .single-product {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--black);
+    border: 1px solid rgba(255,255,255,0.06);
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+    overflow: hidden;
+  }
+
+  .product-images {
+    position: relative;
+    background: #111;
+    overflow: hidden;
+  }
+
+  .product-images img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.5s ease;
+  }
+
+  .product-img-placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+    background: #181818;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.8rem;
+    color: rgba(255,255,255,0.1);
+    border: 2px dashed rgba(192,84,106,0.3);
+  }
+
+  .product-img-placeholder span {
+    font-family: 'Black Ops One', cursive;
+    font-size: 2.5rem;
+    color: rgba(192,84,106,0.2);
+  }
+
+  .product-img-placeholder p {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: rgba(192,84,106,0.5);
+    text-transform: uppercase;
+  }
+
+  /* Shirt image from uploaded file */
+  .shirt-image-container {
+    width: 100%;
+    min-height: 400px;
+    position: relative;
+    background: #111;
+    overflow: hidden;
+  }
+
+  .shirt-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .img-view-toggle {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    z-index: 2;
+  }
+
+  .view-btn {
+    background: rgba(10,10,10,0.8);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: var(--cream);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+  }
+
+  .view-btn.active, .view-btn:hover {
+    background: var(--pink);
+    border-color: var(--pink);
+    color: white;
+  }
+
+  .product-details {
+    padding: 2.5rem 2.5rem 2.5rem 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .product-badge {
+    display: inline-block;
+    background: var(--pink);
+    color: white;
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+    margin-bottom: 1rem;
+    width: fit-content;
+  }
+
+  .product-title-big {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+
+  .product-price-big {
+    font-family: 'Black Ops One', cursive;
+    font-size: 2rem;
+    color: var(--pink);
+    margin-bottom: 1.5rem;
+  }
+
+  .product-price-big small {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    display: block;
+    margin-top: 0.2rem;
+    letter-spacing: 0.1em;
+  }
+
+  /* STOCK METER */
+  .stock-section {
+    margin-bottom: 1.5rem;
+    background: rgba(192,84,106,0.06);
+    border: 1px solid rgba(192,84,106,0.15);
+    padding: 1rem;
+  }
+
+  .stock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .stock-label { color: var(--text-muted); }
+
+  .stock-count {
+    color: var(--pink);
+    font-weight: bold;
+  }
+
+  .stock-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    overflow: hidden;
+  }
+
+  .stock-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink), var(--pink-light));
+    transition: width 1s ease;
+  }
+
+  .stock-sizes {
+    margin-top: 0.8rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .size-stock-chip {
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--cream);
+  }
+
+  .size-stock-chip.low {
+    border-color: rgba(192,84,106,0.5);
+    color: var(--pink-light);
+  }
+
+  .size-stock-chip.out {
+    border-color: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.2);
+    text-decoration: line-through;
+  }
+
+  /* SIZE BUTTONS */
+  .size-select-section { margin-bottom: 1.5rem; }
+
+  .size-select-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+    display: block;
+  }
+
+  .size-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .size-btn {
+    background: var(--black);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--cream);
+    padding: 0.5rem 0.8rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .size-btn:hover, .size-btn.active {
+    background: var(--pink);
+    border-color: var(--pink);
+    color: white;
+  }
+
+  .size-btn.sold-out {
+    opacity: 0.3;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+
+  /* ORDER FORM */
+  #order {
+    max-width: 700px;
+    margin: 0 auto;
+    background: var(--gray);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 3rem;
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+  }
+
+  .form-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-subtitle {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  .form-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .form-input, .form-select, .form-textarea {
+    background: var(--black);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--off-white);
+    padding: 0.8rem 1rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    appearance: none;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--pink); }
+  .form-select option { background: var(--black); }
+  .form-textarea { resize: vertical; min-height: 80px; }
+
+  .form-divider {
+    grid-column: 1 / -1;
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    margin: 0.5rem 0;
+  }
+
+  .stripe-btn {
+    grid-column: 1 / -1;
+    background: #635BFF;
+    color: white;
+    border: none;
+    padding: 1.2rem;
+    font-family: 'Black Ops One', cursive;
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    text-decoration: none;
+    margin-top: 0.5rem;
+  }
+
+  .stripe-btn:hover { background: #7c74ff; transform: translateY(-1px); }
+
+  .stripe-note {
+    grid-column: 1 / -1;
+    background: rgba(99,91,255,0.08);
+    border: 1px solid rgba(99,91,255,0.25);
+    padding: 1rem;
+    font-size: 0.65rem;
+    color: #a5a0ff;
+    line-height: 1.6;
+    margin-top: 0.5rem;
+  }
+
+  .form-submit {
+    grid-column: 1 / -1;
+    background: var(--pink);
+    color: white;
+    border: none;
+    padding: 1.2rem;
+    font-family: 'Black Ops One', cursive;
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    margin-top: 0.5rem;
+  }
+
+  .form-submit:hover { background: var(--pink-light); transform: translateY(-1px); }
+
+  /* REVIEWS SECTION */
+  #reviews {
+    background: var(--black);
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .reviews-inner { max-width: 1100px; margin: 0 auto; }
+
+  .reviews-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .overall-rating {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .rating-big {
+    font-family: 'Black Ops One', cursive;
+    font-size: 5rem;
+    color: var(--pink);
+    line-height: 1;
+  }
+
+  .rating-details { display: flex; flex-direction: column; gap: 0.3rem; }
+
+  .stars-row {
+    display: flex;
+    gap: 0.2rem;
+    font-size: 1.2rem;
+  }
+
+  .star { color: var(--pink); }
+  .star.empty { color: rgba(255,255,255,0.15); }
+
+  .rating-count {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .review-card {
+    background: var(--gray);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 1.5rem;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+    transition: border-color 0.3s;
+  }
+
+  .review-card:hover { border-color: rgba(192,84,106,0.3); }
+
+  .review-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .reviewer-info { display: flex; flex-direction: column; gap: 0.2rem; }
+
+  .reviewer-name {
+    font-size: 0.8rem;
+    color: var(--off-white);
+    font-weight: bold;
+    letter-spacing: 0.05em;
+  }
+
+  .reviewer-location {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .review-stars { display: flex; gap: 0.15rem; font-size: 0.9rem; }
+
+  .verified-badge {
+    display: inline-block;
+    background: rgba(192,84,106,0.15);
+    border: 1px solid rgba(192,84,106,0.3);
+    color: var(--pink-light);
+    font-size: 0.5rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    margin-bottom: 0.8rem;
+    width: fit-content;
+  }
+
+  .review-text {
+    font-size: 0.78rem;
+    line-height: 1.8;
+    color: var(--cream);
+  }
+
+  .review-date {
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    margin-top: 1rem;
+    text-transform: uppercase;
+  }
+
+  .leave-review-box {
+    background: var(--gray);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 2.5rem;
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+    margin-top: 2rem;
+  }
+
+  .leave-review-box .form-title { font-size: 1.5rem; margin-bottom: 0.3rem; }
+
+  .star-picker {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+  }
+
+  .star-pick { color: rgba(255,255,255,0.15); transition: color 0.15s; }
+  .star-pick.lit { color: var(--pink); }
+
+  /* ABOUT */
+  #about {
+    background: var(--gray);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+
+  .about-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+
+  .about-visual { position: relative; }
+
+  .about-big-text {
+    font-family: 'Black Ops One', cursive;
+    font-size: clamp(5rem, 12vw, 11rem);
+    line-height: 0.85;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(192,84,106,0.3);
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .about-tag {
+    display: inline-block;
+    background: var(--pink);
+    color: white;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .about-body {
+    font-size: 0.85rem;
+    line-height: 2;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+  }
+
+  .about-body strong {
+    color: var(--off-white);
+    font-weight: normal;
+    border-bottom: 1px solid var(--pink);
+  }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--pink);
+    letter-spacing: 0.05em;
+  }
+
+  .stat-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  /* FAQ */
+  #faq {
+    background: var(--black);
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .faq-inner { max-width: 800px; margin: 0 auto; }
+
+  .faq-item {
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+
+  .faq-question {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--off-white);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    text-align: left;
+    padding: 1.5rem 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    transition: color 0.2s;
+  }
+
+  .faq-question:hover { color: var(--pink-light); }
+
+  .faq-icon {
+    font-size: 1.2rem;
+    color: var(--pink);
+    transition: transform 0.3s;
+    flex-shrink: 0;
+    font-style: normal;
+  }
+
+  .faq-item.open .faq-icon { transform: rotate(45deg); }
+
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s;
+  }
+
+  .faq-item.open .faq-answer { max-height: 300px; padding-bottom: 1.5rem; }
+
+  .faq-answer p {
+    font-size: 0.8rem;
+    line-height: 1.9;
+    color: var(--cream);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--black);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 4rem 3rem;
+  }
+
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .footer-brand-name {
+    font-family: 'Black Ops One', cursive;
+    font-size: 3rem;
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 40px rgba(192,84,106,0.3);
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-tagline {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--pink);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .footer-desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    max-width: 280px;
+  }
+
+  .footer-col-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    margin-bottom: 1.5rem;
+    color: var(--cream);
+  }
+
+  .footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--pink-light); }
+
+  .footer-bottom {
+    max-width: 1100px;
+    margin: 2rem auto 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* SUCCESS STATE */
+  .success-state { display: none; text-align: center; padding: 2rem; }
+  .success-state.visible { display: block; }
+  .success-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+  .success-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.1em;
+    color: var(--pink);
+    margin-bottom: 0.5rem;
+  }
+
+  /* ===================== */
+  /* PREORDER POPUP TOAST  */
+  /* ===================== */
+  .toast-container {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    z-index: 9000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    pointer-events: none;
+  }
+
+  .toast {
+    background: var(--gray);
+    border: 1px solid rgba(192,84,106,0.4);
+    border-left: 3px solid var(--pink);
+    padding: 0.9rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    min-width: 260px;
+    max-width: 320px;
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .toast.hide {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  .toast-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--pink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Black Ops One', cursive;
+    font-size: 0.8rem;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .toast-content { display: flex; flex-direction: column; gap: 0.15rem; }
+
+  .toast-name {
+    font-size: 0.75rem;
+    color: var(--off-white);
+    font-weight: bold;
+    letter-spacing: 0.05em;
+  }
+
+  .toast-action {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .toast-action strong { color: var(--pink-light); }
+
+  .toast-time {
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 0.1rem;
+  }
+
+  .toast-flag { font-size: 1.1rem; margin-left: auto; flex-shrink: 0; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 1; transform: scaleY(1); }
+    50% { opacity: 0.3; transform: scaleY(0.6); }
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    section { padding: 4rem 1.5rem; }
+    .preorder-header { grid-template-columns: 1fr; gap: 2rem; }
+    .single-product { grid-template-columns: 1fr; }
+    .product-details { padding: 1.5rem; }
+    .about-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .about-big-text { font-size: 5rem; }
+    .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: 1; }
+    .form-submit, .stripe-btn { grid-column: 1; }
+    .stripe-note { grid-column: 1; }
+    #order { padding: 1.5rem; }
+    .footer-bottom { flex-direction: column; gap: 0.5rem; text-align: center; }
+    .about-stats { grid-template-columns: repeat(3,1fr); }
+    .reviews-header { flex-direction: column; }
+    .reviews-grid { grid-template-columns: 1fr; }
+    .toast-container { left: 1rem; bottom: 1rem; }
+    .toast { min-width: 220px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== -->
+<!-- PREORDER TOAST POPUP  -->
+<!-- ==================== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">NVLL</a>
+  <ul class="nav-links">
+    <li><a href="#preorder">Drop</a></li>
+    <li><a href="#order">Pre-Order</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <a href="#order" class="btn-primary" style="font-size:0.65rem; padding:0.7rem 1.5rem;">Pre-Order Now</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <p class="hero-eyebrow">// Drop 001 — Coming Soon</p>
+  <h1 class="hero-title">
+    NVLL
+    <span>NVLL</span>
+  </h1>
+  <p class="hero-slogan">Create From Nothing</p>
+  <div class="hero-cta-group">
+    <a href="#order" class="btn-primary">Reserve Your Piece</a>
+    <a href="#preorder" class="btn-outline">View the Drop</a>
+  </div>
+</section>
+
+<!-- DROP BANNER -->
+<div class="drop-banner">
+  <span class="marquee-text">
+    ✦ DROP 001 INCOMING ✦ CREATE FROM NOTHING ✦ NVLL WORLDWIDE ✦ LIMITED QUANTITIES ✦ PRE-ORDER NOW ✦ DROP 001 INCOMING ✦ CREATE FROM NOTHING ✦ NVLL WORLDWIDE ✦ LIMITED QUANTITIES ✦ PRE-ORDER NOW ✦&nbsp;
+  </span>
+</div>
+
+<!-- PRE-ORDER SECTION -->
+<section id="preorder">
+  <div class="preorder-inner">
+    <div class="preorder-header">
+      <div>
+        <span class="section-label">// Drop 001</span>
+        <h2 class="section-title">The First Drop</h2>
+        <p class="preorder-desc">
+          This is where it starts. Drop 001 is the foundation — pieces built to last, designed to stand out. 
+          Every item is part of the first chapter of NVLL. Pre-order now to lock in your spot before quantities run out.
+          <br><br>
+          <strong style="color:var(--pink)">Drops ship within 6–8 weeks of closing.</strong>
+        </p>
+      </div>
+      <div class="drop-countdown">
+        <div class="countdown-label">// Pre-order closes in</div>
+        <div class="countdown-grid">
+          <div class="countdown-unit">
+            <div class="countdown-num" id="days">14</div>
+            <div class="countdown-unit-label">Days</div>
+          </div>
+          <div class="countdown-unit">
+            <div class="countdown-num" id="hours">00</div>
+            <div class="countdown-unit-label">Hrs</div>
+          </div>
+          <div class="countdown-unit">
+            <div class="countdown-num" id="mins">00</div>
+            <div class="countdown-unit-label">Min</div>
+          </div>
+          <div class="countdown-unit">
+            <div class="countdown-num" id="secs">00</div>
+            <div class="countdown-unit-label">Sec</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SINGLE PRODUCT CARD -->
+    <div class="single-product">
+      <!-- SHIRT IMAGE — front/back toggle -->
+      <div class="shirt-image-container">
+        <!-- 
+          IMAGE INSTRUCTIONS:
+          Replace the src below with your uploaded shirt image path.
+          The image shows front & back — you can also split into two images and toggle.
+          Current setup shows the full mockup sheet you uploaded.
+        -->
+        <img 
+          id="shirtImg"
+          src="421.png" 
+          alt="Create From Nothing Tee — NVLL Drop 001 Front"
+          style="width:100%; height:100%; object-fit:cover; display:block; transition: opacity 0.3s ease;"
+        >
+        <div class="img-view-toggle">
+          <button class="view-btn active" onclick="showView('front', this)">Front</button>
+          <button class="view-btn" onclick="showView('back', this)">Back</button>
+        </div>
+      </div>
+
+      <div class="product-details">
+        <div class="product-badge">Drop 001 — Limited</div>
+        <div class="product-title-big">"Create From Nothing" Tee</div>
+        <div class="product-price-big">
+          $55
+          <small>Pre-order price · Ships 6–8 weeks</small>
+        </div>
+
+        <!-- SIZE SELECT -->
+        <div class="size-select-section">
+          <span class="size-select-label">Select Size</span>
+          <div class="size-buttons">
+            <button type="button" class="size-btn" onclick="selectSize(this)">XS</button>
+            <button type="button" class="size-btn" onclick="selectSize(this)">S</button>
+            <button type="button" class="size-btn" onclick="selectSize(this)">M</button>
+            <button type="button" class="size-btn" onclick="selectSize(this)">L</button>
+            <button type="button" class="size-btn" onclick="selectSize(this)">XL</button>
+            <button type="button" class="size-btn" onclick="selectSize(this)">XXL</button>
+          </div>
+        </div>
+
+        <a href="#order" class="btn-primary" style="display:inline-block; font-size:0.8rem; padding:1rem 2rem;">
+          Pre-Order Now →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER FORM / STRIPE -->
+<section style="padding: 6rem 3rem; background: var(--black);">
+  <div id="order">
+    <div id="form-state">
+      <div class="form-title">Reserve Your Drop</div>
+      <p class="form-subtitle">
+        Fill in your details below, then complete your pre-order securely through Stripe.
+      </p>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">First Name *</label>
+          <input type="text" class="form-input" id="fname" placeholder="First" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name *</label>
+          <input type="text" class="form-input" id="lname" placeholder="Last" required>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Email Address *</label>
+          <input type="email" class="form-input" id="email" placeholder="your@email.com" required>
+        </div>
+
+        <hr class="form-divider">
+
+        <div class="form-group full">
+          <label class="form-label">Item *</label>
+          <select class="form-select" id="item">
+            <option value="tee-cfn">"Create From Nothing" Tee — $55</option>
+          </select>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Size *</label>
+          <div class="size-buttons" id="sizeBtns">
+            <button type="button" class="size-btn" onclick="selectSize(this)">XS</button>
+            <button type="button" class="size-btn" onclick="selectSize(this)">S</button>
+            <button type="button" class="size-btn" onclick="selectSize(this)">M</button>
+            <button type="button" class="size-btn" onclick="selectSize(this)">L</button>
+            <button type="button" class="size-btn" onclick="selectSize(this)">XL</button>
+            <button type="button" class="size-btn" onclick="selectSize(this)">XXL</button>
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Shipping Address *</label>
+          <input type="text" class="form-input" id="address" placeholder="Street address, City, State, ZIP / Country">
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Notes (optional)</label>
+          <textarea class="form-textarea" placeholder="Any special requests..."></textarea>
+        </div>
+
+        <div class="stripe-note">
+          🔒 <strong>Secure checkout via Stripe.</strong> You'll be redirected to a secure Stripe payment page to complete your pre-order. Your card info never touches our servers.
+        </div>
+
+        <!-- 
+          STRIPE BUTTON INSTRUCTIONS:
+          1. Go to dashboard.stripe.com → Payment Links → Create Link
+          2. Add your product "Create From Nothing Tee — $55"
+          3. Replace YOUR_STRIPE_PAYMENT_LINK below with your actual Stripe Payment Link URL
+          4. The button will redirect customers straight to Stripe checkout
+        -->
+        <button class="form-submit" onclick="goToStripe()">
+          🔒 COMPLETE PRE-ORDER VIA STRIPE →
+        </button>
+
+        <p style="grid-column:1/-1; font-size:0.6rem; color:var(--text-muted); text-align:center; letter-spacing:0.1em; margin-top:-0.5rem;">
+          Powered by Stripe · 256-bit SSL encryption
+        </p>
+      </div>
+    </div>
+
+    <div class="success-state" id="success-state">
+      <div class="success-icon">🔥</div>
+      <div class="success-title">You're Locked In</div>
+      <p style="font-size:0.8rem; color:var(--cream); line-height:1.8;">
+        Your pre-order has been received. Check your email for confirmation.
+        <br>Welcome to NVLL. Create From Nothing.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS SECTION -->
+<section id="reviews">
+  <div class="reviews-inner">
+    <div class="reviews-header">
+      <div>
+        <span class="section-label">// What People Say</span>
+        <h2 class="section-title">Reviews</h2>
+      </div>
+      <div class="overall-rating">
+        <div class="rating-big">4.9</div>
+        <div class="rating-details">
+          <div class="stars-row">
+            <span class="star">★</span>
+            <span class="star">★</span>
+            <span class="star">★</span>
+            <span class="star">★</span>
+            <span class="star">★</span>
+          </div>
+          <div class="rating-count">Based on early reviews</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reviews-grid" id="reviewsGrid">
+
+      <div class="review-card">
+        <div class="review-top">
+          <div class="reviewer-info">
+            <div class="reviewer-name">Marcus T.</div>
+            <div class="reviewer-location">🇺🇸 Atlanta, GA</div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+        </div>
+        <div class="verified-badge">✓ Verified Pre-Order</div>
+        <div class="review-text">
+          Bro the design is HARD. The "Create From Nothing" graphic on the back goes crazy. 
+          Can't wait for this to actually drop. Already telling everyone about NVLL.
+        </div>
+        <div class="review-date">2 days ago</div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-top">
+          <div class="reviewer-info">
+            <div class="reviewer-name">Jasmine R.</div>
+            <div class="reviewer-location">🇬🇧 London, UK</div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+        </div>
+        <div class="verified-badge">✓ Verified Pre-Order</div>
+        <div class="review-text">
+          Ordered from London — the shipping process was smooth and the brand's energy is 
+          unmatched. The aesthetic is exactly what I've been looking for. This is the real deal.
+        </div>
+        <div class="review-date">4 days ago</div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-top">
+          <div class="reviewer-info">
+            <div class="reviewer-name">DeShawn M.</div>
+            <div class="reviewer-location">🇺🇸 Chicago, IL</div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+        </div>
+        <div class="verified-badge">✓ Verified Pre-Order</div>
+        <div class="review-text">
+          The character graphic on the front is wild. This is the kind of piece that turns heads. 
+          Locked in size L and I already know it's gonna drip different.
+        </div>
+        <div class="review-date">1 week ago</div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-top">
+          <div class="reviewer-info">
+            <div class="reviewer-name">Aaliyah S.</div>
+            <div class="reviewer-location">🇨🇦 Toronto, ON</div>
+          </div>
+          <div class="review-stars">★★★★☆</div>
+        </div>
+        <div class="verified-badge">✓ Verified Pre-Order</div>
+        <div class="review-text">
+          Love the concept and the branding is clean as hell. Pre-ordered as soon as I saw it. 
+          Just waiting on the drop — will update when it arrives!
+        </div>
+        <div class="review-date">1 week ago</div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-top">
+          <div class="reviewer-info">
+            <div class="reviewer-name">Kwame A.</div>
+            <div class="reviewer-location">🇬🇭 Accra, Ghana</div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+        </div>
+        <div class="verified-badge">✓ Verified Pre-Order</div>
+        <div class="review-text">
+          Ordered internationally and the team was super responsive. NVLL is built different. 
+          The "Create From Nothing" message hits deep — repped from Ghana.
+        </div>
+        <div class="review-date">2 weeks ago</div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-top">
+          <div class="reviewer-info">
+            <div class="reviewer-name">Tyler W.</div>
+            <div class="reviewer-location">🇺🇸 Houston, TX</div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+        </div>
+        <div class="verified-badge">✓ Verified Pre-Order</div>
+        <div class="review-text">
+          My homie put me on and I immediately secured my size. The graphic is fire and 
+          the brand story is real. This is gonna be big, I can feel it.
+        </div>
+        <div class="review-date">2 weeks ago</div>
+      </div>
+
+    </div>
+
+    <!-- LEAVE A REVIEW BOX -->
+    <div class="leave-review-box" id="reviewForm">
+      <div class="form-title" style="font-size:1.5rem; margin-bottom:0.3rem;">Leave a Review</div>
+      <p class="form-subtitle">Pre-ordered or just hyped? Let the world know.</p>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Your Name *</label>
+          <input type="text" class="form-input" id="reviewName" placeholder="Name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Location</label>
+          <input type="text" class="form-input" id="reviewLocation" placeholder="City, Country">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Rating *</label>
+          <div class="star-picker" id="starPicker">
+            <span class="star-pick" data-val="1">★</span>
+            <span class="star-pick" data-val="2">★</span>
+            <span class="star-pick" data-val="3">★</span>
+            <span class="star-pick" data-val="4">★</span>
+            <span class="star-pick" data-val="5">★</span>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Your Review *</label>
+          <textarea class="form-textarea" id="reviewText" placeholder="Tell us what you think..." style="min-height:100px;"></textarea>
+        </div>
+        <button class="form-submit" onclick="submitReview()" style="grid-column:1/-1;">POST REVIEW →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-inner">
+    <div class="about-visual">
+      <div class="about-big-text">
+        CREATE<br>FROM<br>NVLL
+      </div>
+    </div>
+    <div>
+      <span class="about-tag">// The Brand</span>
+      <h2 class="section-title">Built From<br>Nothing.</h2>
+      <p class="about-body">
+        NVLL isn't a brand that waited for permission. It started with <strong>zero connections, zero backing, zero budget</strong> — just a vision and the grind to make it real.
+      </p>
+      <p class="about-body">
+        Every piece is designed for people who move different. Who create their own lane. Who understand that <strong>nothing is the beginning of everything</strong>.
+      </p>
+      <p class="about-body">
+        Drop 001 is just the start. Every drop tells a story. Every stitch means something. <strong>NVLL Worldwide.</strong>
+      </p>
+      <div class="about-stats">
+        <div>
+          <div class="stat-num">001</div>
+          <div class="stat-label">First Drop</div>
+        </div>
+        <div>
+          <div class="stat-num">∞</div>
+          <div class="stat-label">Mindset</div>
+        </div>
+        <div>
+          <div class="stat-num">0→</div>
+          <div class="stat-label">Created From</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="faq-inner">
+    <span class="section-label">// Got Questions</span>
+    <h2 class="section-title" style="margin-bottom:3rem;">FAQ</h2>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        When will my order ship?
+        <i class="faq-icon">+</i>
+      </button>
+      <div class="faq-answer">
+        <p>Drop 001 is a pre-order drop. All orders ship within 6–8 weeks of the pre-order window closing. You'll get an email notification with tracking info when your package ships.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        What's your return/exchange policy?
+        <i class="faq-icon">+</i>
+      </button>
+      <div class="faq-answer">
+        <p>Since Drop 001 is a pre-order, all sales are final. However, if we make an error on your order (wrong item, wrong size), we'll make it right. Hit us up at contact@nvll.com within 7 days of receiving your order.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        What sizes do you carry?
+        <i class="faq-icon">+</i>
+      </button>
+      <div class="faq-answer">
+        <p>Drop 001 runs XS through XXL. Our tee is designed oversized and boxy — if you prefer a fitted look, size down. If you're going for that streetwear drip, go true to size or size up.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        Do you ship internationally?
+        <i class="faq-icon">+</i>
+      </button>
+      <div class="faq-answer">
+        <p>NVLL ships worldwide. International shipping rates vary depending on your location and will be calculated at Stripe checkout. Allow additional time for international deliveries — typically 2–4 weeks on top of production time.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        Will there be more drops?
+        <i class="faq-icon">+</i>
+      </button>
+      <div class="faq-answer">
+        <p>This is just the beginning. NVLL drops in limited quantities — once a drop is gone, it's gone. Follow us on social and stay on the email list to be the first to know when Drop 002 goes live.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand-name">NVLL</div>
+      <div class="footer-tagline">Create From Nothing</div>
+      <p class="footer-desc">
+        Street culture. Uncompromising design. Built from zero.
+        Drop 001 available now via pre-order.
+      </p>
+    </div>
+    <div>
+      <div class="footer-col-title">Navigate</div>
+      <ul class="footer-links">
+        <li><a href="#preorder">The Drop</a></li>
+        <li><a href="#order">Pre-Order</a></li>
+        <li><a href="#reviews">Reviews</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Contact</div>
+      <ul class="footer-links">
+        <li><a href="mailto:contact@nvll.com">contact@nvll.com</a></li>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">TikTok</a></li>
+        <li><a href="#">Twitter/X</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 NVLL — All rights reserved</span>
+    <span style="color:var(--pink); letter-spacing:0.2em;">CREATE FROM NOTHING</span>
+  </div>
+</footer>
+
+<script>
+// =============================
+// STRIPE INTEGRATION
+// =============================
+// SETUP INSTRUCTIONS:
+// 1. Go to https://dashboard.stripe.com
+// 2. Products → Add Product → "Create From Nothing Tee" $55
+// 3. Payment Links → Create → Select your product
+// 4. Copy the payment link URL and paste it below
+const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/YOUR_LINK_HERE';
+// Example: 'https://buy.stripe.com/test_abc123xyz'
+
+function goToStripe() {
+  const fname = document.getElementById('fname').value.trim();
+  const email = document.getElementById('email').value.trim();
+
+  if (!fname || !email) {
+    alert('Please enter your name and email before continuing to payment.');
+    return;
+  }
+
+  if (STRIPE_PAYMENT_LINK.includes('YOUR_LINK_HERE')) {
+    alert('⚠️ Stripe not connected yet.\n\nTo activate payments:\n1. Go to dashboard.stripe.com\n2. Create a Payment Link for $55\n3. Replace YOUR_LINK_HERE in the code with your link URL');
+    return;
+  }
+
+  // Pass email to Stripe via query param (Stripe pre-fills it)
+  const url = `${STRIPE_PAYMENT_LINK}?prefilled_email=${encodeURIComponent(email)}`;
+  window.open(url, '_blank');
+}
+
+// =============================
+// COUNTDOWN
+// =============================
+const target = new Date();
+target.setDate(target.getDate() + 14);
+
+function updateCountdown() {
+  const now = new Date();
+  const diff = target - now;
+  if (diff <= 0) {
+    ['days','hours','mins','secs'].forEach(id => document.getElementById(id).textContent = '00');
+    return;
+  }
+  document.getElementById('days').textContent = String(Math.floor(diff/86400000)).padStart(2,'0');
+  document.getElementById('hours').textContent = String(Math.floor((diff%86400000)/3600000)).padStart(2,'0');
+  document.getElementById('mins').textContent = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+  document.getElementById('secs').textContent = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// =============================
+// SHIRT VIEW TOGGLE (Front/Back)
+// =============================
+function showView(view, btn) {
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const img = document.getElementById('shirtImg');
+  img.style.opacity = '0';
+  setTimeout(() => {
+    img.src = view === 'front' ? '421.png' : '422.png';
+    img.alt = view === 'front' ? 'Create From Nothing Tee — Front' : 'Create From Nothing Tee — Back';
+    img.style.opacity = '1';
+  }, 200);
+}
+
+// =============================
+// FAQ TOGGLE
+// =============================
+function toggleFaq(btn) {
+  const item = btn.parentElement;
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// =============================
+// SIZE SELECTOR
+// =============================
+function selectSize(btn) {
+  if (btn.classList.contains('sold-out')) return;
+  const parent = btn.closest('.size-buttons') || btn.parentElement;
+  parent.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// =============================
+// STAR RATING PICKER
+// =============================
+let selectedStars = 0;
+const starPicker = document.getElementById('starPicker');
+if (starPicker) {
+  starPicker.querySelectorAll('.star-pick').forEach(star => {
+    star.addEventListener('mouseover', () => {
+      const val = parseInt(star.dataset.val);
+      starPicker.querySelectorAll('.star-pick').forEach((s,i) => {
+        s.classList.toggle('lit', i < val);
+      });
+    });
+    star.addEventListener('mouseleave', () => {
+      starPicker.querySelectorAll('.star-pick').forEach((s,i) => {
+        s.classList.toggle('lit', i < selectedStars);
+      });
+    });
+    star.addEventListener('click', () => {
+      selectedStars = parseInt(star.dataset.val);
+      starPicker.querySelectorAll('.star-pick').forEach((s,i) => {
+        s.classList.toggle('lit', i < selectedStars);
+      });
+    });
+  });
+}
+
+// =============================
+// SUBMIT REVIEW
+// =============================
+function submitReview() {
+  const name = document.getElementById('reviewName').value.trim();
+  const location = document.getElementById('reviewLocation').value.trim();
+  const text = document.getElementById('reviewText').value.trim();
+
+  if (!name || !text || !selectedStars) {
+    alert('Please add your name, a rating, and a review.');
+    return;
+  }
+
+  const stars = '★'.repeat(selectedStars) + '☆'.repeat(5 - selectedStars);
+  const card = document.createElement('div');
+  card.className = 'review-card';
+  card.innerHTML = `
+    <div class="review-top">
+      <div class="reviewer-info">
+        <div class="reviewer-name">${escapeHtml(name)}</div>
+        <div class="reviewer-location">${location ? escapeHtml(location) : 'NVLL Community'}</div>
+      </div>
+      <div class="review-stars">${stars}</div>
+    </div>
+    <div class="verified-badge">✓ Community Review</div>
+    <div class="review-text">${escapeHtml(text)}</div>
+    <div class="review-date">Just now</div>
+  `;
+
+  const grid = document.getElementById('reviewsGrid');
+  grid.insertBefore(card, grid.firstChild);
+
+  // Reset
+  document.getElementById('reviewName').value = '';
+  document.getElementById('reviewLocation').value = '';
+  document.getElementById('reviewText').value = '';
+  selectedStars = 0;
+  if (starPicker) starPicker.querySelectorAll('.star-pick').forEach(s => s.classList.remove('lit'));
+
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// =============================
+// NAV SCROLL
+// =============================
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  nav.style.borderBottomColor = window.scrollY > 50
+    ? 'rgba(192,84,106,0.2)'
+    : 'rgba(255,255,255,0.06)';
+});
+
+// =============================
+// SOCIAL PROOF TOASTS
+// =============================
+const preorders = [
+  { name: 'Jordan M.', city: 'New York, NY', flag: '🇺🇸', size: 'L', time: '2 min ago' },
+  { name: 'Kira S.', city: 'London, UK', flag: '🇬🇧', size: 'S', time: '4 min ago' },
+  { name: 'Antoine B.', city: 'Paris, France', flag: '🇫🇷', size: 'M', time: '7 min ago' },
+  { name: 'Malik J.', city: 'Atlanta, GA', flag: '🇺🇸', size: 'XL', time: '9 min ago' },
+  { name: 'Yemi A.', city: 'Lagos, Nigeria', flag: '🇳🇬', size: 'M', time: '12 min ago' },
+  { name: 'Sofia R.', city: 'Toronto, CA', flag: '🇨🇦', size: 'XS', time: '15 min ago' },
+  { name: 'Isaiah T.', city: 'Houston, TX', flag: '🇺🇸', size: 'L', time: '18 min ago' },
+  { name: 'Priya N.', city: 'Dubai, UAE', flag: '🇦🇪', size: 'S', time: '22 min ago' },
+  { name: 'Chris W.', city: 'Sydney, AU', flag: '🇦🇺', size: 'M', time: '26 min ago' },
+  { name: 'Zara K.', city: 'Berlin, Germany', flag: '🇩🇪', size: 'S', time: '31 min ago' },
+  { name: 'Devon H.', city: 'Miami, FL', flag: '🇺🇸', size: 'XL', time: '35 min ago' },
+  { name: 'Amara D.', city: 'Accra, Ghana', flag: '🇬🇭', size: 'M', time: '38 min ago' },
+];
+
+function showToast(data) {
+  const container = document.getElementById('toastContainer');
+  const initials = data.name.split(' ').map(n=>n[0]).join('');
+
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `
+    <div class="toast-avatar">${initials}</div>
+    <div class="toast-content">
+      <div class="toast-name">${data.name}</div>
+      <div class="toast-action">just pre-ordered <strong>size ${data.size}</strong></div>
+      <div class="toast-time">${data.city} · ${data.time}</div>
+    </div>
+    <div class="toast-flag">${data.flag}</div>
+  `;
+
+  container.appendChild(toast);
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => toast.classList.add('show'));
+  });
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+    toast.classList.add('hide');
+    setTimeout(() => toast.remove(), 500);
+  }, 4500);
+}
+
+// Show toasts at random intervals after 3 seconds
+let toastIndex = 0;
+function scheduleNextToast() {
+  const delay = 5000 + Math.random() * 8000; // 5–13 sec between each
+  setTimeout(() => {
+    showToast(preorders[toastIndex % preorders.length]);
+    toastIndex++;
+    scheduleNextToast();
+  }, delay);
+}
+
+setTimeout(scheduleNextToast, 3000);
+</script>
+</body>
+</html>
