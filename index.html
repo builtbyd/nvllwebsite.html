@@ -1205,7 +1205,7 @@ let actIdx = 0;
 function showActivity() {
   const popup = document.getElementById('activityPopup');
   const a = activities[actIdx % activities.length];
-  document.getElementById('activityMsg').textContent = `${a.name} from ${a.city} just pre-ordered the ${a.item}.`;
+  document.getElementById('activityMsg').textContent = a.name + ' from ' + a.city + ' just pre-ordered the ' + a.item + '.';
   document.getElementById('activityTime').textContent = a.time;
   
   popup.classList.add('show');
